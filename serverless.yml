@@ -1,0 +1,71 @@
+service: line-bot
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-2
+  stage: dev
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
+    ACCESSTOKEN: your_access_token
+    CHANNELSECRET: your_channel_secret
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}*"
+
+functions:
+  logProtein:
+    handler: handler.logProtein
+    environment:
+      TableName: ${self:provider.environment.DYNAMODB_TABLE}-protein
+    events:
+      - http:
+          path: protein
+          method: post
+
+resources:
+  Resources:
+    Protein:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}-protein
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: sentAt
+            AttributeType: N
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: sentAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 8083
+  dynamodb:
+    stages: dev
+    start:
+      port: 8082
+      inMemory: true
+      migrate: true
+      seed: true
+    seed:
+      protein:
+        sources:
+          - table: ${self:provider.environment.DYNAMODB_TABLE}-protein
+            sources: [./seeds/protein.json]
