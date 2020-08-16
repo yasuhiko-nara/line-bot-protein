@@ -1,0 +1,12 @@
+{
+  "main": "handler.js",
+  "dependencies": {
+    "@line/bot-sdk": "^7.0.0"
+  },
+  "name": "line-bot",
+  "devDependencies": {
+    "aws-sdk": "^2.729.0",
+    "serverless-dynamodb-local": "^0.2.39",
+    "serverless-offline": "^6.5.0"
+  }
+}

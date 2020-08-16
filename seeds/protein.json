@@ -1,0 +1,18 @@
+[
+  {
+    "userId": "Hanako",
+    "sentAt": 1597126641204,
+    "protein": 50
+  },
+  {
+    "userId": "Taro",
+    "sentAt": 1597126631204,
+    "protein": 60
+  },
+
+  {
+    "userId": "Jiro",
+    "sentAt": 1597126241204,
+    "protein": 70
+  }
+]
